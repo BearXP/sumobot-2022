@@ -1,0 +1,7 @@
+<xml xmlns="https://developers.google.com/blockly/xml"><comment id="F4Cc$*5m}J5l}m(XDy5f" data="0" x="0" y="350" h="120" w="410">https://github.com/mworkfun/pxt-k-bit.git</comment><block type="pxt-on-start" id="6|S0fs+e,$z{53L2:Q)i" x="0" y="0"><statement name="HANDLER"><block type="device_show_leds" id="ut9YIMg;q*/#f:qe*TVw"><field name="LEDS">`
+        . # . # . 
+        # # # # # 
+        # # # # # 
+        . # # # . 
+        . . # . .
+        `</field><data>0</data></block></statement></block><block type="device_forever" id="D-.!!WE1h|GDON8+vMex" x="237" y="0"></block></xml>
