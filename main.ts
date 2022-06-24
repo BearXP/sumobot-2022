@@ -1,10 +1,7 @@
 function DetectedSensorLeft () {
+    // Left when behind the robot (i.e. D3)
     SensorRawLeft = k_Bit.obstacle(MotorObs.LeftSide)
     return !(SensorRawLeft)
-}
-function DetectedSensorRight() {
-    SensorRawRight = k_Bit.obstacle(MotorObs.RightSide)
-    return !(SensorRawRight)
 }
 function ReadSensors () {
     if (DetectedFrontClose()) {
@@ -14,7 +11,11 @@ function ReadSensors () {
     } else if (DetectedSensorRight()) {
         NewMove = 9
     } else if (DetectedEgde()) {
-        NewMove = 2
+        if (LastMove == 7) {
+            NewMove = 3
+        } else {
+            NewMove = 2
+        }
     } else {
         NewMove = 5
     }
@@ -22,11 +23,15 @@ function ReadSensors () {
 function ReadRemote () {
     RemoteButtonPressed = irRemote.returnIrButton()
     if (RemoteButtonPressed != 0) {
-        SerialDebug("    > REMOTE " + RemoteButtonPressed)
+        SerialDebug("THE REMOTE INTERFERES WITH THE")
+        SerialDebug(" LEFT/RIGHT SENSOR, AND IS")
+        SerialDebug(" NOT ALLOWED")
     }
-    if (irRemote.irButton(IrButton.Up) == 1) {
-        UltrasonicDistance = 8
-    }
+}
+function DetectedSensorRight () {
+    // Right when behind the robot (i.e. D8)
+    SensorRawRight = k_Bit.obstacle(MotorObs.RightSide)
+    return !(SensorRawRight)
 }
 function DetectedEgde () {
     SensorEdge = k_Bit.LineTracking()
@@ -37,8 +42,8 @@ function Move () {
     if (LastMove != NewMove) {
         LastMove = NewMove
         if (NewMove == 7) {
-            k_Bit.Motor(MotorObs.LeftSide, MotorDir.Forward, MotorSpeed)
-            k_Bit.Motor(MotorObs.RightSide, MotorDir.Forward, 0)
+            k_Bit.Motor(MotorObs.LeftSide, MotorDir.Forward, MotorSpeed / 2)
+            k_Bit.Motor(MotorObs.RightSide, MotorDir.Forward, MotorSpeed)
             basic.showLeds(`
                 . # # # #
                 . . . # #
@@ -56,8 +61,8 @@ function Move () {
                 . . # . .
                 `)
         } else if (NewMove == 9) {
-            k_Bit.Motor(MotorObs.LeftSide, MotorDir.Forward, 0)
-            k_Bit.Motor(MotorObs.RightSide, MotorDir.Forward, MotorSpeed)
+            k_Bit.Motor(MotorObs.LeftSide, MotorDir.Forward, MotorSpeed)
+            k_Bit.Motor(MotorObs.RightSide, MotorDir.Forward, MotorSpeed / 2)
             basic.showLeds(`
                 # # # # .
                 # # . . .
@@ -67,6 +72,16 @@ function Move () {
                 `)
         } else if (NewMove == 2) {
             k_Bit.run(DIR.RunBack, MotorSpeed)
+            basic.showLeds(`
+                . . # . .
+                . . # . .
+                # . # . #
+                . # # # .
+                . . # . .
+                `)
+        } else if (NewMove == 3) {
+            k_Bit.Motor(MotorObs.LeftSide, MotorDir.Back, MotorSpeed / 2)
+            k_Bit.Motor(MotorObs.RightSide, MotorDir.Back, MotorSpeed)
             basic.showLeds(`
                 . . # . .
                 . . # . .
@@ -89,16 +104,16 @@ function DetectedFrontClose () {
 function SerialDebug (text: string) {
     serial.writeLine(text)
 }
+let UltrasonicDistance = 0
 let SensorEdge = 0
 let SensorRawRight = 0
-let UltrasonicDistance = 0
 let RemoteButtonPressed = 0
 let SensorRawLeft = 0
 let NewMove = 0
 let LastMove = 0
 let MotorSpeed = 0
 MotorSpeed = 30
-irRemote.connectInfrared(DigitalPin.P1)
+irRemote.connectInfrared(DigitalPin.P16)
 LastMove = 5
 NewMove = 5
 basic.showLeds(`
