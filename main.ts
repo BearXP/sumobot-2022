@@ -1,7 +1,18 @@
+function DetectEdgeRight () {
+    SensorEdgeRawRight = pins.digitalReadPin(DigitalPin.P12)
+    return !(SensorEdgeRawRight)
+}
+function DetectEdgeLeft() {
+    SensorEdgeRawLeft = pins.digitalReadPin(DigitalPin.P13)
+    return !(SensorEdgeRawLeft)
+}
 function DetectedSensorLeft () {
     // Left when behind the robot (i.e. D3)
     SensorRawLeft = k_Bit.obstacle(MotorObs.LeftSide)
     return !(SensorRawLeft)
+}
+function DetectedEdge () {
+    return (DetectEdgeRight || DetectEdgeLeft)
 }
 function ReadSensors () {
     if (DetectedFrontClose()) {
@@ -10,8 +21,8 @@ function ReadSensors () {
         NewMove = 7
     } else if (DetectedSensorRight()) {
         NewMove = 9
-    } else if (DetectedEgde()) {
-        if (LastMove == 7) {
+    } else if (DetectedEdge()) {
+        if (DetectEdgeRight()) {
             NewMove = 3
         } else {
             NewMove = 2
@@ -32,10 +43,6 @@ function DetectedSensorRight () {
     // Right when behind the robot (i.e. D8)
     SensorRawRight = k_Bit.obstacle(MotorObs.RightSide)
     return !(SensorRawRight)
-}
-function DetectedEgde () {
-    SensorEdge = k_Bit.LineTracking()
-    return !(SensorEdge)
 }
 // https://github.com/mworkfun/pxt-k-bit.git
 function Move () {
@@ -105,19 +112,21 @@ function SerialDebug (text: string) {
     serial.writeLine(text)
 }
 let UltrasonicDistance = 0
-let SensorEdge = 0
 let SensorRawRight = 0
 let RemoteButtonPressed = 0
+let SensorEdge = 0
 let SensorRawLeft = 0
-let NewMove = 0
-let LastMove = 0
+let SensorEdgeRawRight = 0
 let MotorSpeed = 0
+let LastMove = 0
+let NewMove = 0
+let SensorEdgeRawLeft = 0
+NewMove = 5
+LastMove = 5
+MotorSpeed = 30
 let strip = neopixel.create(DigitalPin.P5, 18, NeoPixelMode.RGB)
 strip.showRainbow(1, 360)
-MotorSpeed = 30
 irRemote.connectInfrared(DigitalPin.P16)
-LastMove = 5
-NewMove = 5
 basic.showLeds(`
     . # . # .
     # # # # #
