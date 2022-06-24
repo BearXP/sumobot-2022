@@ -112,6 +112,8 @@ let SensorRawLeft = 0
 let NewMove = 0
 let LastMove = 0
 let MotorSpeed = 0
+let strip = neopixel.create(DigitalPin.P5, 18, NeoPixelMode.RGB)
+strip.showRainbow(1, 360)
 MotorSpeed = 30
 irRemote.connectInfrared(DigitalPin.P16)
 LastMove = 5
@@ -133,5 +135,12 @@ control.inBackground(function () {
         UltrasonicDistance = k_Bit.ultra()
         // SerialDebug("UltrasonicDistance" + UltrasonicDistance)
         basic.pause(200)
+    }
+})
+control.inBackground(function () {
+    while (true) {
+        basic.pause(111.1)
+        strip.rotate(1)
+        strip.show()
     }
 })
